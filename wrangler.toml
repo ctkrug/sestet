@@ -1,0 +1,16 @@
+name = "six-words-live"
+compatibility_date = "2024-07-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+# Fill in the `database_id` / `id` fields after creating the resources with
+# `wrangler d1 create six-words-live` and `wrangler kv namespace create VOTES_KV`.
+
+[[d1_databases]]
+binding = "DB"
+database_name = "six-words-live"
+database_id = "REPLACE_ME"
+
+[[kv_namespaces]]
+binding = "VOTES_KV"
+id = "REPLACE_ME"
