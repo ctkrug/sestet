@@ -33,16 +33,20 @@ export async function listEntries(
   return results;
 }
 
+// Returns false (no-op) instead of throwing when the unique
+// (prompt_id, author_token) index rejects a duplicate submission, so the
+// route can turn a lost race into a clean 409 rather than a 500.
 export async function insertEntry(
   db: D1Database,
   entry: { id: string; promptId: string; body: string; authorToken: string; createdAt: number },
-): Promise<void> {
-  await db
+): Promise<boolean> {
+  const { meta } = await db
     .prepare(
-      "INSERT INTO entries (id, prompt_id, body, author_token, vote_count, created_at) VALUES (?, ?, ?, ?, 0, ?)",
+      "INSERT OR IGNORE INTO entries (id, prompt_id, body, author_token, vote_count, created_at) VALUES (?, ?, ?, ?, 0, ?)",
     )
     .bind(entry.id, entry.promptId, entry.body, entry.authorToken, entry.createdAt)
     .run();
+  return meta.changes > 0;
 }
 
 export async function hasSubmittedToday(db: D1Database, promptId: string, authorToken: string): Promise<boolean> {
