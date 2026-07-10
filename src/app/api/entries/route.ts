@@ -1,6 +1,6 @@
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import { NextRequest, NextResponse } from "next/server";
-import { getOrCreatePrompt, hasSubmittedToday, insertEntry, listEntries } from "@/lib/db";
+import { getOrCreatePrompt, getVotedEntryIds, hasSubmittedToday, insertEntry, listEntries } from "@/lib/db";
 import { getOrCreateVisitorToken, visitorCookieHeader } from "@/lib/identity";
 import { checkRateLimit } from "@/lib/kv";
 import { isValidSixWordEntry, promptTextForDate, utcDateKey } from "@/lib/prompts";
@@ -17,10 +17,15 @@ export async function GET(request: NextRequest) {
 
   const { token } = getOrCreateVisitorToken(request.headers.get("cookie"));
   const rows = await listEntries(DB, prompt.id, sort);
-  const entries = rows.map((row) => ({
+  const votedIds = await getVotedEntryIds(
+    DB,
+    rows.map((row) => row.id),
+    token,
+  );
+  const entries = rows.map(({ authorToken, ...row }) => ({
     ...row,
-    votedByMe: false, // resolved client-side per-entry via /api/vote responses; avoids an N-query join here
-    isMine: false,
+    votedByMe: votedIds.has(row.id),
+    isMine: authorToken === token,
   }));
 
   return NextResponse.json({ entries, promptId: prompt.id, viewerToken: token });
@@ -55,7 +60,12 @@ export async function POST(request: NextRequest) {
     authorToken: token,
     createdAt: Date.now(),
   };
-  await insertEntry(DB, entry);
+  const inserted = await insertEntry(DB, entry);
+  if (!inserted) {
+    // Lost a race with another request from the same visitor token between
+    // the check above and the insert; the unique index caught it.
+    return NextResponse.json({ error: "You already submitted today's story." }, { status: 409 });
+  }
 
   const response = NextResponse.json({ entry: { ...entry, voteCount: 0, votedByMe: false, isMine: true } });
   if (isNew) response.headers.set("set-cookie", visitorCookieHeader(token));
