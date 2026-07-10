@@ -6,7 +6,7 @@ land before anything optional.
 
 ## Epic 1 — The live wall (the wow moment)
 
-- [ ] **1.1 Submit a six-word entry and land in the live wall instantly**
+- [x] **1.1 Submit a six-word entry and land in the live wall instantly**
   - Submitting a valid six-word entry adds it to the wall for the current visitor with no
     page reload, in under 1 second of the request resolving.
   - The submitted entry visually distinguishes itself (e.g. a highlight/pulse) as "yours" for
@@ -14,45 +14,45 @@ land before anything optional.
   - Submitting fewer or more than six words shows an inline error and does not create an
     entry (verify via a direct 5-word and 7-word submission).
 
-- [ ] **1.2 See the shared daily prompt**
+- [x] **1.2 See the shared daily prompt**
   - Loading the site with no prior visit shows a prompt and a compose box, not a blank page.
   - Two separate sessions (e.g. two browser profiles) loading the site on the same UTC day see
     byte-identical prompt text.
   - Reloading later the same UTC day shows the same prompt as before.
 
-- [ ] **1.3 Live-updating wall for entries from other visitors**
+- [x] **1.3 Live-updating wall for entries from other visitors**
   - An entry submitted from Session A appears in Session B's wall without Session B reloading
     the page, within 10 seconds.
   - The wall handles zero entries (empty state, not a blank area) and 100+ entries (scrolls,
     doesn't degrade layout) without visual breakage.
 
-- [ ] **1.4 One entry per visitor per day**
+- [x] **1.4 One entry per visitor per day**
   - After a successful submission, the compose box is replaced by a "you already wrote today's
     story" state showing the visitor's own entry; resubmitting via a direct API call returns a
     409 and does not create a second row.
   - Clearing cookies and resubmitting is allowed (new anonymous visitor) — verify a fresh
     browser profile can submit on the same day a first profile already used.
 
-- [ ] **1.5 Design polish — composer and wall**
+- [x] **1.5 Design polish — composer and wall**
   - The composer and wall match `docs/DESIGN.md` tokens (colors, type pairing, spacing scale)
     and pass the D3 self-review checklist (390/768/1440 layouts, hover/focus/active states,
     submit + arrival juice, sound with persisted mute) before this story is checked off.
 
 ## Epic 2 — Voting
 
-- [ ] **2.1 Upvote any entry once**
+- [x] **2.1 Upvote any entry once**
   - Clicking upvote on an entry increases its displayed count by exactly one and the button
     visually reflects the "voted" state.
   - Clicking upvote again on the same entry from the same browser does not increase the count
     a second time (verify via two direct API calls with the same visitor cookie).
   - Voting on your own entry is allowed (no special-casing) — verify the count increments.
 
-- [ ] **2.2 Sort the wall by newest or most-upvoted**
+- [x] **2.2 Sort the wall by newest or most-upvoted**
   - Toggling to "top" reorders visible entries by vote count descending, ties broken by newest
     first; toggling back to "new" restores chronological order.
   - The active sort choice is visually indicated (not just functional).
 
-- [ ] **2.3 Abuse resistance on writes**
+- [x] **2.3 Abuse resistance on writes**
   - Submitting more than 3 entries in 60 seconds from one visitor token is rejected with a 429
     and a user-visible message (verify via rapid direct API calls).
   - Casting more than 30 votes in 60 seconds from one visitor token is rejected with a 429.
