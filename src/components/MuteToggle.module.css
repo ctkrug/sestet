@@ -1,0 +1,31 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--surface-1);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: transform 150ms var(--ease-out), color 150ms var(--ease-out), border-color 150ms var(--ease-out);
+}
+
+.button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.button:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.button[data-muted="true"] {
+  color: var(--text-muted);
+}
+
+.button[data-muted="false"] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
