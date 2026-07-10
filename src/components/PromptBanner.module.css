@@ -1,0 +1,67 @@
+.banner {
+  padding: var(--space-2) 0 var(--space-3);
+}
+
+.label {
+  display: block;
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.prompt {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: clamp(1.75rem, 4.5vw, 3rem);
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.squiggle {
+  display: block;
+  width: min(100%, 420px);
+  height: 14px;
+  margin-top: 6px;
+  overflow: visible;
+}
+
+.squiggle path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.skeleton {
+  width: min(90%, 480px);
+  height: clamp(1.75rem, 4.5vw, 3rem);
+  border-radius: var(--radius-control);
+  background: var(--surface-1);
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(250, 246, 236, 0.7), transparent);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
