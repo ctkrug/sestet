@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Six Words Live",
   description:
     "Everyone gets the same six-word story prompt today. Write yours, drop it into the live wall, and upvote the best before midnight.",
+  icons: {
+    icon: "favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
