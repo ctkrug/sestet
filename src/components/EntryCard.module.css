@@ -1,0 +1,98 @@
+.card {
+  background: var(--surface-2);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.card[data-arriving="true"] {
+  animation: slideFadeIn 220ms var(--ease-out), glowDecay 1000ms var(--ease-out);
+}
+
+.card[data-mine="true"] {
+  animation: slideFadeIn 220ms var(--ease-out), minePulse 600ms var(--ease-out);
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.125rem;
+  color: var(--text);
+  overflow-wrap: break-word;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--support);
+  background: rgba(47, 82, 51, 0.12);
+  border-radius: var(--radius-pill);
+  padding: 3px 8px;
+}
+
+.time {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.voteButton {
+  appearance: none;
+  border: 1px solid var(--surface-1);
+  background: var(--surface-1);
+  color: var(--text-muted);
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: transform 150ms var(--ease-out), border-color 150ms var(--ease-out), color 150ms var(--ease-out),
+    background 150ms var(--ease-out);
+}
+
+.voteButton:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.voteButton:active {
+  transform: translateY(1px);
+}
+
+.voteButton[data-voted="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.voteCount {
+  display: inline-block;
+}
+
+.voteCount.pop {
+  animation: votePop 220ms var(--ease-out);
+}
+
+.shake {
+  display: inline-flex;
+  animation: shakeNo 260ms var(--ease-out);
+}
