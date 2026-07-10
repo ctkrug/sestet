@@ -57,6 +57,20 @@ export async function hasSubmittedToday(db: D1Database, promptId: string, author
   return row !== null;
 }
 
+export async function getVotedEntryIds(
+  db: D1Database,
+  entryIds: readonly string[],
+  voterToken: string,
+): Promise<Set<string>> {
+  if (entryIds.length === 0) return new Set();
+  const placeholders = entryIds.map(() => "?").join(", ");
+  const { results } = await db
+    .prepare(`SELECT entry_id as entryId FROM votes WHERE voter_token = ? AND entry_id IN (${placeholders})`)
+    .bind(voterToken, ...entryIds)
+    .all<{ entryId: string }>();
+  return new Set(results.map((row) => row.entryId));
+}
+
 export async function castVote(
   db: D1Database,
   entryId: string,
