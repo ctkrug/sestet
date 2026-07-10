@@ -16,20 +16,23 @@ export async function getOrCreatePrompt(db: D1Database, dateKey: string, text: s
   return { id: dateKey, text, createdAt };
 }
 
+type StoredEntry = Omit<Entry, "votedByMe" | "isMine"> & { authorToken: string };
+
 export async function listEntries(
   db: D1Database,
   promptId: string,
   sort: "new" | "top",
   limit = 100,
-): Promise<Omit<Entry, "votedByMe" | "isMine">[]> {
+): Promise<StoredEntry[]> {
   const orderBy = sort === "top" ? "vote_count DESC, created_at DESC" : "created_at DESC";
   const { results } = await db
     .prepare(
-      `SELECT id, prompt_id as promptId, body, vote_count as voteCount, created_at as createdAt
+      `SELECT id, prompt_id as promptId, body, vote_count as voteCount, created_at as createdAt,
+              author_token as authorToken
        FROM entries WHERE prompt_id = ? ORDER BY ${orderBy} LIMIT ?`,
     )
     .bind(promptId, limit)
-    .all<Omit<Entry, "votedByMe" | "isMine">>();
+    .all<StoredEntry>();
   return results;
 }
 
