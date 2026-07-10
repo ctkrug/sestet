@@ -21,6 +21,11 @@ CREATE INDEX IF NOT EXISTS idx_entries_prompt_created
 CREATE INDEX IF NOT EXISTS idx_entries_prompt_votes
   ON entries(prompt_id, vote_count DESC);
 
+-- Enforces "one entry per visitor per prompt" at the database level so a race
+-- between two concurrent submissions from the same browser can't both land.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_entries_prompt_author
+  ON entries(prompt_id, author_token);
+
 CREATE TABLE IF NOT EXISTS votes (
   entry_id TEXT NOT NULL REFERENCES entries(id),
   voter_token TEXT NOT NULL,    -- anonymous per-browser id
