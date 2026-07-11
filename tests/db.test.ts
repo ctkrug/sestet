@@ -140,6 +140,11 @@ describe("castVote", () => {
       { voteCount: 1, alreadyVoted: true },
     ]);
   });
+
+  it("degrades to a zero count instead of throwing for an unknown entry id", async () => {
+    const result = await castVote(db, "does-not-exist", "voter-1");
+    expect(result).toEqual({ voteCount: 0, alreadyVoted: false });
+  });
 });
 
 describe("listPastPrompts", () => {
