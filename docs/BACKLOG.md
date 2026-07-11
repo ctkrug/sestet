@@ -80,13 +80,13 @@ land before anything optional.
 
 ## Epic 4 — Hardening and launch readiness
 
-- [ ] **4.1 Accessibility pass**
+- [x] **4.1 Accessibility pass**
   - Full keyboard navigation reaches the composer, sort toggle, and every entry's upvote
     control in a sane tab order; focus is visible at every stop.
   - The live wall's arrival of new entries is announced via an `aria-live` region without
     spamming screen readers on every poll tick.
 
-- [ ] **4.2 Mobile composer ergonomics**
+- [x] **4.2 Mobile composer ergonomics**
   - On a 390px viewport, the compose box, submit button, and wall are all reachable and usable
     with no horizontal scroll and no overlapping elements.
   - Touch targets for submit and upvote are at least 44px.
