@@ -34,6 +34,7 @@ export default function HomePage() {
   const promptIdRef = useRef<string | null>(null);
   const sortRef = useRef<SortMode>("new");
   const wallErrorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const entriesRequestIdRef = useRef(0);
 
   useEffect(() => {
     setMuted(getStoredMute());
@@ -52,10 +53,17 @@ export default function HomePage() {
 
   const loadEntries = useCallback(
     async (sortMode: SortMode, isInitial: boolean) => {
+      // A re-sort click fires a request while an older poll (or a previous
+      // sort click) is still in flight; network responses can resolve out
+      // of order, so only the most recently-issued request is allowed to
+      // touch state — an earlier one landing later is discarded as stale.
+      const requestId = ++entriesRequestIdRef.current;
       try {
         const response = await fetch(`/api/entries?sort=${sortMode}`, { cache: "no-store" });
+        if (requestId !== entriesRequestIdRef.current) return;
         if (!response.ok) return;
         const data = (await response.json()) as EntriesResponse;
+        if (requestId !== entriesRequestIdRef.current) return;
 
         if (promptIdRef.current !== null && data.promptId !== promptIdRef.current) {
           // UTC day rolled over mid-session: cross-fade into the fresh prompt
