@@ -128,6 +128,12 @@ class FakeD1 {
 
     if (sql.startsWith("INSERT OR IGNORE INTO votes")) {
       const [entryId, voterToken, createdAt] = args as [string, string, number];
+      // The real schema has `votes.entry_id REFERENCES entries(id)`, which D1
+      // enforces: inserting a vote for an entry id that doesn't exist throws
+      // rather than silently no-opping, so this must too.
+      if (!this.entries.some((e) => e.id === entryId)) {
+        throw new Error("D1_ERROR: FOREIGN KEY constraint failed: SQLITE_CONSTRAINT");
+      }
       const duplicate = this.votes.some((v) => v.entry_id === entryId && v.voter_token === voterToken);
       if (duplicate) return { first: null, results: [], changes: 0 };
       this.votes.push({ entry_id: entryId, voter_token: voterToken, created_at: createdAt });

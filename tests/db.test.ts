@@ -141,9 +141,9 @@ describe("castVote", () => {
     ]);
   });
 
-  it("degrades to a zero count instead of throwing for an unknown entry id", async () => {
+  it("returns null instead of throwing for an unknown entry id", async () => {
     const result = await castVote(db, "does-not-exist", "voter-1");
-    expect(result).toEqual({ voteCount: 0, alreadyVoted: false });
+    expect(result).toBeNull();
   });
 });
 
