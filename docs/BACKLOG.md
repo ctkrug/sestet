@@ -61,20 +61,20 @@ land before anything optional.
 
 ## Epic 3 — Midnight rollover and archive
 
-- [ ] **3.1 New prompt at UTC midnight**
+- [x] **3.1 New prompt at UTC midnight**
   - A visitor with the page open across UTC midnight sees the wall transition to the new
     day's prompt without a manual reload, within 60 seconds of rollover (poll-driven is fine).
   - The previous day's entries are no longer submittable-against (a direct API call trying to
     post against a stale prompt id is rejected).
 
-- [ ] **3.2 Browse the archive**
+- [x] **3.2 Browse the archive**
   - An `/archive` (or equivalent) route lists past UTC days with their prompt text.
   - Selecting a past day shows that day's frozen wall, sorted by votes, read-only (no
     compose box, no voting).
   - The archive handles the "no past days yet" state (first day of the site's life) without
     error.
 
-- [ ] **3.3 Design polish — archive and empty states**
+- [x] **3.3 Design polish — archive and empty states**
   - The archive list and archive detail view match `docs/DESIGN.md` tokens and layout intent;
     empty/loading/error states are designed, not blank, per the D3 checklist.
 
