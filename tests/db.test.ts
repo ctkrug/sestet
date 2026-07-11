@@ -131,6 +131,15 @@ describe("castVote", () => {
     const result = await castVote(db, "e1", "voter-2");
     expect(result).toEqual({ voteCount: 2, alreadyVoted: false });
   });
+
+  it("does not double-count two concurrent votes from the same voter", async () => {
+    const [first, second] = await Promise.all([castVote(db, "e1", "voter-1"), castVote(db, "e1", "voter-1")]);
+    const byVoteCount = [first, second].sort((a, b) => a.voteCount - b.voteCount);
+    expect(byVoteCount).toEqual([
+      { voteCount: 1, alreadyVoted: false },
+      { voteCount: 1, alreadyVoted: true },
+    ]);
+  });
 });
 
 describe("listPastPrompts", () => {
