@@ -125,8 +125,10 @@ export async function castVote(
     await db.prepare("UPDATE entries SET vote_count = vote_count + 1 WHERE id = ?").bind(entryId).run();
   }
 
+  // Entries are never deleted, and we already confirmed this one exists
+  // above, so it's guaranteed to still be here.
   const entry = await db.prepare("SELECT vote_count as voteCount FROM entries WHERE id = ?").bind(entryId).first<{
     voteCount: number;
   }>();
-  return { voteCount: entry?.voteCount ?? 0, alreadyVoted: meta.changes === 0 };
+  return { voteCount: entry!.voteCount, alreadyVoted: meta.changes === 0 };
 }
