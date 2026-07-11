@@ -72,6 +72,11 @@ npm run db:migrate:local
 npm run dev
 ```
 
+Optionally, `npm run db:seed:local` populates today's prompt with four sample entries
+(`migrations/seed.sql`) so the wall isn't empty on a fresh checkout. It computes "today"
+via SQLite's own `date('now')` rather than a hardcoded date, and only ever targets
+`--local` — there is no remote counterpart, and it must never be run against production.
+
 ## Testing
 
 `tests/helpers/fakeD1.ts` and `tests/helpers/fakeKv.ts` are dependency-free, hand-written
