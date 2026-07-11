@@ -91,7 +91,7 @@ land before anything optional.
     with no horizontal scroll and no overlapping elements.
   - Touch targets for submit and upvote are at least 44px.
 
-- [ ] **4.3 Seed content for an empty launch day**
+- [x] **4.3 Seed content for an empty launch day**
   - A migration or seed script can populate a handful of realistic sample entries for local/
     preview environments so the wall never demos empty.
   - Seed data is clearly excluded from production writes (documented, not auto-run against the
