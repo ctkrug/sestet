@@ -15,11 +15,23 @@ src/app/page.tsx (client)
   ├─ GET  /api/entries  → the wall for the current prompt, sorted "new" or "top"
   ├─ POST /api/entries  → submit a six-word entry (rate-limited, one per visitor per prompt)
   └─ POST /api/vote     → upvote an entry (rate-limited, one vote per visitor per entry)
+
+src/app/archive/page.tsx (client)         → GET /api/archive       → past days, newest first
+src/app/archive/[id]/page.tsx (client)    → GET /api/archive/[id]  → one frozen day, read-only
 ```
 
 The page polls `GET /api/entries` every 5s (`POLL_INTERVAL_MS` in `page.tsx`) to pick up
 entries from other visitors and detect a UTC day rollover (the response's `promptId`
-changing mid-session swaps in the new prompt without a full reload).
+changing mid-session swaps in the new prompt without a full reload). `POST /api/entries`
+never takes a client-supplied prompt id — it always resolves the day's prompt from the
+server clock, so there's no way to submit against a stale (yesterday's) prompt.
+
+The archive is read-only and has no polling: `GET /api/archive` excludes whatever prompt
+id is "current" as of the request and returns each past day with its entry count;
+`GET /api/archive/[id]` 404s for an unknown date key and otherwise returns that day's
+prompt plus its entries sorted by vote count (ties newest-first), with no
+`votedByMe`/`isMine` fields since voting and per-visitor identity are meaningless once a
+day is frozen.
 
 ## Modules
 
@@ -37,10 +49,14 @@ changing mid-session swaps in the new prompt without a full reload).
   visitors) get the arrival animation.
 - `src/lib/sound.ts` — synthesized WebAudio SFX (no audio files) with a localStorage-persisted
   mute flag; every function guards `typeof window === "undefined"` so it's safe in tests/SSR.
-- `src/lib/format.ts` — `timeAgo`, coarse relative-time labels for entry metadata.
+- `src/lib/format.ts` — `timeAgo`, coarse relative-time labels for entry metadata, and
+  `formatArchiveDate`, which renders a prompt id's `YYYY-MM-DD` date key as a full label
+  (parsed as UTC explicitly so it can't shift a day under a reader's local timezone).
 - `src/components/` — `PromptBanner`, `Composer`, `Wall`, `EntryCard`, `MuteToggle`,
-  `Wordmark`, each with a co-located CSS module. `src/app/page.tsx` is the client-side
-  orchestrator that owns all wall/composer state and wires them together.
+  `Wordmark`, `ArchiveDayCard`, `ArchiveEntryRow`, each with a co-located CSS module.
+  `src/app/page.tsx` is the client-side orchestrator that owns all wall/composer state and
+  wires them together; the archive pages are simpler client components that own only their
+  own fetch/loading state.
 - `src/app/fonts.ts` — Fraunces (display) + Inter (UI) via `next/font/google`, matching
   `docs/DESIGN.md`'s type pairing.
 
