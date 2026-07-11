@@ -1,10 +1,7 @@
 import type { Entry, Prompt } from "@/types";
 
 export async function getOrCreatePrompt(db: D1Database, dateKey: string, text: string): Promise<Prompt> {
-  const existing = await db
-    .prepare("SELECT id, text, created_at as createdAt FROM prompts WHERE id = ?")
-    .bind(dateKey)
-    .first<Prompt>();
+  const existing = await getPromptById(db, dateKey);
   if (existing) return existing;
 
   const createdAt = Date.now();
@@ -14,6 +11,13 @@ export async function getOrCreatePrompt(db: D1Database, dateKey: string, text: s
     .run();
 
   return { id: dateKey, text, createdAt };
+}
+
+export async function getPromptById(db: D1Database, id: string): Promise<Prompt | null> {
+  return db
+    .prepare("SELECT id, text, created_at as createdAt FROM prompts WHERE id = ?")
+    .bind(id)
+    .first<Prompt>();
 }
 
 type StoredEntry = Omit<Entry, "votedByMe" | "isMine"> & { authorToken: string };
