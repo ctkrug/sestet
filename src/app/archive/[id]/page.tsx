@@ -21,7 +21,7 @@ export default function ArchiveDayPage({ params }: { params: { id: string } }) {
   const [status, setStatus] = useState<LoadState>("loading");
 
   useEffect(() => {
-    document.title = data ? `${data.prompt.text} · Six Words Live archive` : "Six Words Live archive";
+    document.title = data ? `${data.prompt.text} · Sestet archive` : "Sestet archive";
   }, [data]);
 
   useEffect(() => {

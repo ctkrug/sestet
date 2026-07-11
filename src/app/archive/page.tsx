@@ -14,7 +14,7 @@ export default function ArchiveIndexPage() {
   const [status, setStatus] = useState<LoadState>("loading");
 
   useEffect(() => {
-    document.title = "The archive · Six Words Live";
+    document.title = "The archive · Sestet";
   }, []);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function ArchiveIndexPage() {
       ) : days.length === 0 ? (
         <div className={styles.empty}>
           <p className={styles.emptyTitle}>No past days yet</p>
-          <p>Six Words Live just started &mdash; check back tomorrow for the first archived day.</p>
+          <p>Sestet just started &mdash; check back tomorrow for the first archived day.</p>
         </div>
       ) : (
         <ul className={styles.list}>

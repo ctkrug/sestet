@@ -3,11 +3,17 @@ import { fraunces, inter } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Six Words Live",
+  title: "Sestet — one prompt, six words, everyone today",
   description:
-    "Everyone gets the same six-word story prompt today. Write yours, drop it into the live wall, and upvote the best before midnight.",
+    "Sestet gives everyone the same six-word story prompt each day. Write yours, drop it into a live wall of everyone else's, and upvote the best before midnight.",
   icons: {
     icon: "favicon.svg",
+  },
+  openGraph: {
+    title: "Sestet — one prompt, six words, everyone today",
+    description:
+      "Everyone gets the same six-word story prompt each day. Write yours, land in a live wall of everyone else's, and upvote the best before midnight.",
+    type: "website",
   },
 };
 
