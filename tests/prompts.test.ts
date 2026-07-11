@@ -29,6 +29,11 @@ describe("countWords", () => {
   it("collapses repeated whitespace", () => {
     expect(countWords("one   two\tthree\nfour five six")).toBe(6);
   });
+
+  it("returns zero for empty or whitespace-only input", () => {
+    expect(countWords("")).toBe(0);
+    expect(countWords("   \t\n")).toBe(0);
+  });
 });
 
 describe("isValidSixWordEntry", () => {
@@ -46,5 +51,20 @@ describe("isValidSixWordEntry", () => {
 
   it("rejects empty or whitespace-only input", () => {
     expect(isValidSixWordEntry("   ")).toBe(false);
+  });
+
+  it("accepts six emoji as six words", () => {
+    expect(isValidSixWordEntry("🎉 🚀 🌊 🔥 ✨ 🎈")).toBe(true);
+  });
+
+  it("rejects an entry over 280 characters even if trims to six words", () => {
+    const paddedWord = "a".repeat(50);
+    const body = Array(6).fill(paddedWord).join(" ");
+    expect(body.length).toBeGreaterThan(280);
+    expect(isValidSixWordEntry(body)).toBe(false);
+  });
+
+  it("trims leading/trailing whitespace before validating", () => {
+    expect(isValidSixWordEntry("  For sale: baby shoes, never worn.  ")).toBe(true);
   });
 });
