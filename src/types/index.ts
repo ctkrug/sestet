@@ -14,6 +14,12 @@ export interface Entry {
   isMine: boolean;
 }
 
+export interface ArchivedPromptSummary {
+  id: string;
+  text: string;
+  entryCount: number;
+}
+
 export interface CloudflareEnv {
   DB: D1Database;
   VOTES_KV: KVNamespace;

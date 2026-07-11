@@ -66,6 +66,20 @@ class FakeD1 {
       return { first: null, results: [], changes: 1 };
     }
 
+    if (sql.startsWith("SELECT p.id as id, p.text as text")) {
+      const [currentPromptId, limit] = args as [string, number];
+      const rows = this.prompts
+        .filter((p) => p.id !== currentPromptId)
+        .sort((a, b) => (a.id < b.id ? 1 : a.id > b.id ? -1 : 0))
+        .slice(0, limit)
+        .map((p) => ({
+          id: p.id,
+          text: p.text,
+          entryCount: this.entries.filter((e) => e.prompt_id === p.id).length,
+        }));
+      return { first: null, results: rows, changes: 0 };
+    }
+
     if (sql.startsWith("SELECT id, prompt_id as promptId")) {
       const [promptId, limit] = args as [string, number];
       const top = sql.includes("vote_count DESC");

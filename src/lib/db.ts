@@ -1,4 +1,4 @@
-import type { Entry, Prompt } from "@/types";
+import type { ArchivedPromptSummary, Entry, Prompt } from "@/types";
 
 export async function getOrCreatePrompt(db: D1Database, dateKey: string, text: string): Promise<Prompt> {
   const existing = await getPromptById(db, dateKey);
@@ -18,6 +18,25 @@ export async function getPromptById(db: D1Database, id: string): Promise<Prompt 
     .prepare("SELECT id, text, created_at as createdAt FROM prompts WHERE id = ?")
     .bind(id)
     .first<Prompt>();
+}
+
+// Past UTC days (any prompt other than the current one), newest first, each
+// annotated with how many entries it collected — lets the archive index
+// show a day was quiet without a second round-trip per day.
+export async function listPastPrompts(
+  db: D1Database,
+  currentPromptId: string,
+  limit = 30,
+): Promise<ArchivedPromptSummary[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT p.id as id, p.text as text,
+              (SELECT COUNT(*) FROM entries e WHERE e.prompt_id = p.id) as entryCount
+       FROM prompts p WHERE p.id != ? ORDER BY p.id DESC LIMIT ?`,
+    )
+    .bind(currentPromptId, limit)
+    .all<ArchivedPromptSummary>();
+  return results;
 }
 
 type StoredEntry = Omit<Entry, "votedByMe" | "isMine"> & { authorToken: string };
