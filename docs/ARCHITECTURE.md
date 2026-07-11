@@ -41,7 +41,9 @@ day is frozen.
   `insertEntry`/`castVote` lean on real SQL constraints (a unique index on
   `entries(prompt_id, author_token)`, a composite primary key on `votes(entry_id,
   voter_token)`) so "one entry per day" and "one vote per entry" hold even under a race,
-  not just in application logic.
+  not just in application logic. `castVote` checks the entry exists before writing and
+  returns `null` if it doesn't (the route turns that into a 404), since `votes.entry_id`
+  is a foreign key and D1 throws on an insert against a missing id rather than no-op'ing.
 - `src/lib/kv.ts` — `checkRateLimit`, a sliding-window counter backed by KV.
 - `src/lib/identity.ts` — the anonymous visitor token: read/create + cookie header.
 - `src/lib/wall.ts` — pure client-side logic for the live wall: `annotateArrivals` diffs a
