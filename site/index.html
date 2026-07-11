@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sestet: one prompt, six words, everyone today</title>
+    <meta
+      name="description"
+      content="Sestet is a daily six-word story game. Everyone gets the same prompt, you write six words, and you land in a live wall of everyone else's. Read, upvote, done before midnight."
+    />
+    <meta property="og:title" content="Sestet: one prompt, six words, everyone today" />
+    <meta
+      property="og:description"
+      content="A daily six-word story game you play with strangers. Same prompt for everyone, a live wall, one entry a day."
+    />
+    <meta property="og:type" content="website" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23c1432c'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='Georgia, serif' font-size='19' font-weight='700' fill='%23faf6ec'%3E6%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f3ede1;
+        --surface-1: #e9e0cf;
+        --surface-2: #faf6ec;
+        --text: #201a14;
+        --text-muted: #6b5f4f;
+        --accent: #c1432c;
+        --accent-ink: #faf6ec;
+        --support: #2f5233;
+        --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+        --font-ui: "Inter", system-ui, sans-serif;
+        --radius-card: 10px;
+        --radius-control: 6px;
+        --radius-pill: 999px;
+        --shadow-card: 0 1px 2px rgba(32, 26, 20, 0.06), 0 8px 24px rgba(32, 26, 20, 0.08);
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 1px 1px, rgba(32, 26, 20, 0.05) 1px, transparent 0) 0 0 / 22px 22px,
+          var(--bg);
+        color: var(--text);
+        font-family: var(--font-ui);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* Header + wordmark */
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 0;
+      }
+
+      .wordmark {
+        display: inline-flex;
+        align-items: baseline;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 1.5rem;
+        letter-spacing: -0.01em;
+        color: var(--text);
+      }
+
+      .wordmark .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        margin-left: 3px;
+        display: inline-block;
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(0.75);
+        }
+      }
+
+      .nav-link {
+        font-weight: 600;
+        font-size: 0.9375rem;
+        color: var(--text-muted);
+      }
+
+      .nav-link:hover {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 48px 0 24px;
+      }
+
+      .eyebrow {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 0 0 16px;
+      }
+
+      .hero h1 {
+        position: relative;
+        display: inline-block;
+        margin: 0;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-style: italic;
+        font-size: clamp(2.25rem, 6vw, 4rem);
+        line-height: 1.1;
+        max-width: 16ch;
+      }
+
+      .squiggle {
+        display: block;
+        width: min(100%, 360px);
+        height: 14px;
+        margin-top: 8px;
+        overflow: visible;
+      }
+
+      .squiggle path {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 4;
+        stroke-linecap: round;
+      }
+
+      .subhead {
+        max-width: 60ch;
+        margin: 28px 0 0;
+        font-size: 1.1875rem;
+        color: var(--text);
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 32px;
+        align-items: center;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        border-radius: var(--radius-control);
+        padding: 14px 26px;
+        font-weight: 600;
+        font-size: 1rem;
+        min-height: 48px;
+        cursor: pointer;
+        transition: transform 90ms var(--ease-out), box-shadow 150ms var(--ease-out), background 150ms var(--ease-out);
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: var(--accent-ink);
+        box-shadow: 0 1px 2px rgba(32, 26, 20, 0.2);
+      }
+
+      .btn-primary:hover {
+        background: #a83722;
+        text-decoration: none;
+      }
+
+      .btn-primary:active {
+        transform: translateY(1px);
+        box-shadow: none;
+      }
+
+      .btn-ghost {
+        color: var(--text);
+        border: 1px solid rgba(32, 26, 20, 0.2);
+        background: transparent;
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      /* Sections */
+      section {
+        padding: 40px 0;
+      }
+
+      .section-title {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin: 0 0 24px;
+      }
+
+      /* Wall sample */
+      .wall-card {
+        background: var(--surface-2);
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow-card);
+        padding: 28px;
+      }
+
+      .wall-prompt-label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 0 0 6px;
+      }
+
+      .wall-prompt {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-weight: 600;
+        font-size: clamp(1.5rem, 3.5vw, 2.125rem);
+        margin: 0 0 24px;
+      }
+
+      .entry {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 16px;
+        border-radius: var(--radius-control);
+        background: var(--surface-1);
+        margin-bottom: 12px;
+      }
+
+      .entry:last-child {
+        margin-bottom: 0;
+      }
+
+      .entry p {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 1.0625rem;
+      }
+
+      .entry .top {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--support);
+        background: rgba(47, 82, 51, 0.12);
+        border-radius: var(--radius-pill);
+        padding: 3px 8px;
+      }
+
+      .vote {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: var(--text-muted);
+        border: 1px solid rgba(32, 26, 20, 0.12);
+        background: var(--surface-2);
+        border-radius: var(--radius-pill);
+        padding: 6px 12px;
+        white-space: nowrap;
+      }
+
+      .vote svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      /* Features */
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+      }
+
+      .feature {
+        background: var(--surface-2);
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow-card);
+        padding: 24px;
+      }
+
+      .feature h3 {
+        font-family: var(--font-display);
+        font-size: 1.1875rem;
+        margin: 0 0 8px;
+      }
+
+      .feature p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.9375rem;
+      }
+
+      /* Steps */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 24px;
+        counter-reset: step;
+      }
+
+      .step {
+        position: relative;
+        padding-top: 8px;
+      }
+
+      .step::before {
+        counter-increment: step;
+        content: counter(step);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-family: var(--font-display);
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+
+      .step h3 {
+        font-family: var(--font-display);
+        font-size: 1.1875rem;
+        margin: 0 0 6px;
+      }
+
+      .step p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.9375rem;
+      }
+
+      /* FAQ */
+      .faq details {
+        background: var(--surface-2);
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow-card);
+        padding: 4px 24px;
+        margin-bottom: 14px;
+      }
+
+      .faq summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 18px 0;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 1.125rem;
+      }
+
+      .faq summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .faq summary::after {
+        content: "+";
+        float: right;
+        color: var(--accent);
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+
+      .faq details[open] summary::after {
+        content: "\2013";
+      }
+
+      .faq p {
+        margin: 0 0 18px;
+        color: var(--text-muted);
+      }
+
+      /* Footer */
+      footer {
+        border-top: 1px solid rgba(32, 26, 20, 0.12);
+        margin-top: 24px;
+        padding: 32px 0 48px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-muted);
+        font-size: 0.9375rem;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.001ms !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <span class="wordmark">Sestet<span class="dot" aria-hidden="true"></span></span>
+        <a class="nav-link" href="https://github.com/ctkrug/six-words-live">GitHub</a>
+      </header>
+
+      <main>
+        <div class="hero">
+          <p class="eyebrow">A daily six-word story game</p>
+          <h1>
+            Six words. One prompt. The whole day's wall.
+            <svg class="squiggle" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M2 8 C 20 2, 35 2, 50 8 S 80 14, 100 8 S 130 2, 150 8 S 180 14, 198 7" />
+            </svg>
+          </h1>
+          <p class="subhead">
+            Sestet is for people who would rather make something small than solve a puzzle. Everyone who shows up
+            today gets the same prompt. You write exactly six words, hit submit, and land in a live wall of
+            everyone else's take on the same six words. Read them, upvote the ones that land, done before midnight.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://github.com/ctkrug/six-words-live">
+              <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+                />
+              </svg>
+              View on GitHub
+            </a>
+            <a class="btn btn-ghost" href="#how">How it works</a>
+          </div>
+        </div>
+
+        <section aria-label="A day on the wall">
+          <div class="wall-card">
+            <p class="wall-prompt-label">Today's six words are about...</p>
+            <p class="wall-prompt">the last text you never sent</p>
+            <div class="entry">
+              <p>Draft saved. Never sent. Still saved.</p>
+              <span class="vote">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12 4l8 9h-5v7h-6v-7H4l8-9Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                42
+              </span>
+            </div>
+            <div class="entry">
+              <p>Sorry sat unsent for three years.</p>
+              <span class="top">Top</span>
+              <span class="vote">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 4l8 9h-5v7h-6v-7H4l8-9Z" />
+                </svg>
+                58
+              </span>
+            </div>
+            <div class="entry">
+              <p>Typed goodbye. Deleted it. Called instead.</p>
+              <span class="vote">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12 4l8 9h-5v7h-6v-7H4l8-9Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                31
+              </span>
+            </div>
+            <div class="entry">
+              <p>You up? became I'm sorry. Unsent.</p>
+              <span class="vote">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12 4l8 9h-5v7h-6v-7H4l8-9Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                12
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="section-title">Why it's worth a minute a day</h2>
+          <div class="features">
+            <div class="feature">
+              <h3>One prompt for everyone</h3>
+              <p>
+                Every visitor on the same day sees byte-identical prompt text. You are writing against the same
+                six words as everyone else, right now, not into an empty box.
+              </p>
+            </div>
+            <div class="feature">
+              <h3>A wall that feels live</h3>
+              <p>
+                Submit and you are in it instantly. Lines from other people slide in on their own with a soft
+                glow, no refresh, while you sit and read.
+              </p>
+            </div>
+            <div class="feature">
+              <h3>Votes that resist gaming</h3>
+              <p>
+                One entry and one vote per browser, enforced by database constraints rather than a check in the
+                UI. A double-click or a retried request cannot pad the count.
+              </p>
+            </div>
+            <div class="feature">
+              <h3>A midnight close and archive</h3>
+              <p>
+                At the UTC day's end the wall freezes and a new prompt begins. Past days live on in a read-only
+                archive, each sorted by the votes its lines earned.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="how">
+          <h2 class="section-title">How it works</h2>
+          <div class="steps">
+            <div class="step">
+              <h3>Read today's prompt</h3>
+              <p>Open the page. One shared theme is waiting, the same for everyone who visits today.</p>
+            </div>
+            <div class="step">
+              <h3>Write six words</h3>
+              <p>Exactly six. The counter turns green when you are there. Submit once per day.</p>
+            </div>
+            <div class="step">
+              <h3>Join the wall and vote</h3>
+              <p>Your line lands at the top with a pulse. Upvote the ones you love before midnight.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="faq">
+          <h2 class="section-title">Questions</h2>
+          <details>
+            <summary>What is a six-word story?</summary>
+            <p>
+              A complete story told in exactly six words. The form is often traced to Hemingway's "For sale: baby
+              shoes, never worn." The whole craft is fitting a beginning, middle, and turn into six words, which is
+              why it is approachable: having an idea is the entire task.
+            </p>
+          </details>
+          <details>
+            <summary>Do I need an account?</summary>
+            <p>
+              No. There is no sign-up and no login. Sestet keeps a single random token in your browser so it can
+              enforce one entry and one vote per person. Clear your cookies and you are a fresh anonymous visitor.
+            </p>
+          </details>
+          <details>
+            <summary>How often does the prompt change?</summary>
+            <p>
+              Once per day, at midnight UTC. Everyone in the world gets the same prompt for that day. When the day
+              rolls over, the wall freezes into the archive and a new prompt opens for the next round.
+            </p>
+          </details>
+          <details>
+            <summary>Can I submit more than one story a day?</summary>
+            <p>
+              One per day, on purpose. The single-entry limit keeps the wall honest and makes your six words
+              count. You can upvote as many other entries as you like.
+            </p>
+          </details>
+          <details>
+            <summary>Is it open source?</summary>
+            <p>
+              Yes, MIT licensed. It is a Next.js app running on Cloudflare's edge with D1 and KV. The code, the
+              design notes, and the architecture writeup are all on
+              <a href="https://github.com/ctkrug/six-words-live">GitHub</a>.
+            </p>
+          </details>
+        </section>
+      </main>
+
+      <footer>
+        <span>Sestet. MIT licensed. Built by Charlie Krug.</span>
+        <a href="https://apps.charliekrug.com">More by Charlie Krug &rarr; apps.charliekrug.com</a>
+      </footer>
+    </div>
+  </body>
+</html>
